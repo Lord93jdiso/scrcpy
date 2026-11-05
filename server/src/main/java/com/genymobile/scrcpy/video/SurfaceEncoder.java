@@ -328,6 +328,14 @@ public class SurfaceEncoder implements AsyncProcessor {
             // output 1 frame as soon as 1 frame is queued
             format.setInteger(MediaFormat.KEY_LATENCY, 1);
         }
+        if (Build.VERSION.SDK_INT >= AndroidVersions.API_28_ANDROID_9) {
+            // Ask the codec to run at its maximum operating rate (Short.MAX_VALUE
+            // means "unconstrained", as used by AOSP low-latency tests): the codec
+            // resource manager picks its highest performance mode, which avoids
+            // frames queuing up inside the encoder pipeline. This does not impact
+            // quality, only the encoding speed/power profile.
+            format.setInteger(MediaFormat.KEY_OPERATING_RATE, Short.MAX_VALUE);
+        }
         if (maxFps > 0) {
             // The key existed privately before Android 10:
             // <https://android.googlesource.com/platform/frameworks/base/+/625f0aad9f7a259b6881006ad8710adce57d1384%5E%21/>
